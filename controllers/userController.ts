@@ -64,7 +64,6 @@ export const getUserById = async (req: Request, res: Response) => {
 };
 
 export const updateUser = [
-  body("email").isEmail().withMessage("Username must be a string"),
   body().custom((value, { req }) => {
     const keys = Object.keys(req.body);
     const allowedKeys = ["username", "email", "password"];
