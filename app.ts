@@ -1,9 +1,25 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { Express, NextFunction, Request, Response } from "express";
 import { authRouter } from "./routes/authRoutes";
 import { userRouter } from "./routes/userRoutes";
 import listRoutes from "./routes/listRoutes";
+import movieRouter from "./routes/movieRoutes";
+import cors from "cors";
 
-export const app = express();
+export const app: Express = express();
+const allowedOrigins = ["http://localhost:5173"];
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg =
+          "The CORS policy for this site does not allow access from the specified Origin.";
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
+  }),
+);
 
 app.use(express.json());
 
@@ -15,7 +31,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 //routers
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
-app.use("/lists", listRoutes);
+app.use("/api/v1", listRoutes);
+app.use("/api/v1/movies", movieRouter);
 
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
   next(new Error(`Can't find ${req.url} on this server!`));

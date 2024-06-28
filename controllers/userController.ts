@@ -64,15 +64,7 @@ export const getUserById = async (req: Request, res: Response) => {
 };
 
 export const updateUser = [
-  body("username")
-    .optional()
-    .notEmpty()
-    .withMessage("Username must not be empty"),
-  body("email").optional().isEmail().withMessage("Email must be valid"),
-  body("password")
-    .optional()
-    .isLength({ min: 6 })
-    .withMessage("Password must be at least 6 characters long"),
+  body("email").isEmail().withMessage("Username must be a string"),
   body().custom((value, { req }) => {
     const keys = Object.keys(req.body);
     const allowedKeys = ["username", "email", "password"];
@@ -93,16 +85,8 @@ export const updateUser = [
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-      const { id } = req.params;
+      const { email_params } = req.params;
       const { username, email, password } = req.body;
-
-      if (req.user?.id !== id) {
-        return res.status(403).json({
-          status: 403,
-          message: "You are not authorized to update this user",
-          success: false,
-        });
-      }
 
       let hashedPassword;
       if (password) {
@@ -110,7 +94,7 @@ export const updateUser = [
       }
 
       const updatedUser = await prisma.user.update({
-        where: { id },
+        where: { email: email_params },
         data: {
           username,
           email,

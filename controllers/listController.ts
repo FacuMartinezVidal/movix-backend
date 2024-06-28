@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { body, param, validationResult } from "express-validator";
+import { body, validationResult } from "express-validator";
 
 const prisma = new PrismaClient();
 
 export const addToFavorites = [
-  body("userId").isInt().withMessage("User ID must be an integer"),
-  body("movieId").isInt().withMessage("Movie ID must be an integer"),
+  body("userId").isString().withMessage("User ID must be an integer"),
+  body("id").isInt().withMessage("Movie ID must be an integer"),
 
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -14,13 +14,28 @@ export const addToFavorites = [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { userId, movieId } = req.body;
+    const { userId, id } = req.body;
 
     try {
+      const existingFavorite = await prisma.favorite.findFirst({
+        where: {
+          userId,
+          api_id: id,
+        },
+      });
+
+      if (existingFavorite) {
+        return res.status(400).json({
+          status: 400,
+          message: "Movie already in favorites",
+          success: false,
+        });
+      }
+
       const favorite = await prisma.favorite.create({
         data: {
           userId,
-          movieId,
+          api_id: id,
         },
       });
 
@@ -42,21 +57,35 @@ export const addToFavorites = [
 ];
 
 export const removeFromFavorites = [
-  param("id").isInt().withMessage("Favorite ID must be an integer"),
-
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { id } = req.params;
+    const { userId, api_id } = req.params;
 
     try {
-      await prisma.favorite.delete({
-        where: { id: Number(id) },
+      const existingFavorite = await prisma.favorite.findFirst({
+        where: {
+          userId,
+          api_id: Number(api_id),
+        },
       });
 
+      if (existingFavorite === null) {
+        return res.status(404).json({
+          status: 404,
+          message: "Favorite not found",
+          success: false,
+        });
+      }
+
+      await prisma.favorite.delete({
+        where: {
+          id: existingFavorite.id,
+        },
+      });
       res.status(200).json({
         status: 200,
         message: "Movie removed from favorites",
@@ -74,8 +103,8 @@ export const removeFromFavorites = [
 ];
 
 export const addToWatchlist = [
-  body("userId").isInt().withMessage("User ID must be an integer"),
-  body("movieId").isInt().withMessage("Movie ID must be an integer"),
+  body("userId").isString().withMessage("User ID must be an integer"),
+  body("id").isInt().withMessage("Movie ID must be an integer"),
 
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -83,13 +112,27 @@ export const addToWatchlist = [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { userId, movieId } = req.body;
+    const { userId, id } = req.body;
 
     try {
+      const existingWatchlist = await prisma.watchlist.findFirst({
+        where: {
+          userId,
+          api_id: id,
+        },
+      });
+
+      if (existingWatchlist) {
+        return res.status(400).json({
+          status: 400,
+          message: "Movie already in watchlist",
+          success: false,
+        });
+      }
       const watchlist = await prisma.watchlist.create({
         data: {
           userId,
-          movieId,
+          api_id: Number(id),
         },
       });
 
@@ -111,19 +154,34 @@ export const addToWatchlist = [
 ];
 
 export const removeFromWatchlist = [
-  param("id").isInt().withMessage("Watchlist ID must be an integer"),
-
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { id } = req.params;
+    const { userId, api_id } = req.params;
 
     try {
+      const existingWatchlist = await prisma.watchlist.findFirst({
+        where: {
+          userId,
+          api_id: Number(api_id),
+        },
+      });
+
+      if (existingWatchlist === null) {
+        return res.status(404).json({
+          status: 404,
+          message: "Favorite not found",
+          success: false,
+        });
+      }
+
       await prisma.watchlist.delete({
-        where: { id: Number(id) },
+        where: {
+          id: existingWatchlist.id,
+        },
       });
 
       res.status(200).json({
@@ -143,8 +201,8 @@ export const removeFromWatchlist = [
 ];
 
 export const addToWatched = [
-  body("userId").isInt().withMessage("User ID must be an integer"),
-  body("movieId").isInt().withMessage("Movie ID must be an integer"),
+  body("userId").isString().withMessage("User ID must be an integer"),
+  body("id").isInt().withMessage("Movie ID must be an integer"),
 
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -152,13 +210,28 @@ export const addToWatched = [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { userId, movieId } = req.body;
+    const { userId, id } = req.body;
 
     try {
+      const existingWatched = await prisma.watched.findFirst({
+        where: {
+          userId,
+          api_id: Number(id),
+        },
+      });
+
+      if (existingWatched) {
+        return res.status(400).json({
+          status: 400,
+          message: "Movie already in watched list",
+          success: false,
+        });
+      }
+
       const watched = await prisma.watched.create({
         data: {
           userId,
-          movieId,
+          api_id: Number(id),
         },
       });
 
@@ -180,19 +253,33 @@ export const addToWatched = [
 ];
 
 export const removeFromWatched = [
-  param("id").isInt().withMessage("Watched ID must be an integer"),
-
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { id } = req.params;
-
+    const { userId, api_id } = req.params;
+    console.log(userId, api_id);
     try {
+      const existingWatched = await prisma.watched.findFirst({
+        where: {
+          userId,
+          api_id: Number(api_id),
+        },
+      });
+
+      if (existingWatched === null) {
+        return res.status(404).json({
+          status: 404,
+          message: "Favorite not found",
+          success: false,
+        });
+      }
       await prisma.watched.delete({
-        where: { id: Number(id) },
+        where: {
+          id: existingWatched.id,
+        },
       });
 
       res.status(200).json({

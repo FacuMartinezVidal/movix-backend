@@ -46,6 +46,7 @@ export const register = [
       });
 
       const userDTO = {
+        id: newUser.id,
         username: newUser.username,
         email: newUser.email,
       };
@@ -87,24 +88,23 @@ export const login = [
 
       const user = await prisma.user.findUnique({ where: { email } });
       if (!user) {
-        return res
-          .status(401)
-          .json({
-            status: 400,
-            message: "Invalid Credentials",
-            success: false,
-          });
+        return res.status(401).json({
+          status: 400,
+          message: "Invalid Credentials",
+          success: false,
+        });
       }
 
-      const isPasswordValid = await bcrypt.compare(password, user.password);
+      const isPasswordValid = await bcrypt.compare(
+        String(password),
+        user.password,
+      );
       if (!isPasswordValid) {
-        return res
-          .status(401)
-          .json({
-            status: 400,
-            message: "Invalid Credentials",
-            success: false,
-          });
+        return res.status(401).json({
+          status: 400,
+          message: "Invalid Credentials",
+          success: false,
+        });
       }
       if (!process.env.JWT_SECRET) {
         throw new Error("JWT_SECRET not found in .env file");
@@ -117,20 +117,26 @@ export const login = [
         },
       );
 
+      const userDTO = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        token: token,
+      };
+
       res.status(200).setHeader("Authorization", `Bearer ${token}`).json({
         status: 200,
         message: "Successfully login!",
+        user: userDTO,
         success: true,
       });
     } catch (error) {
       console.error("Error en login:", error);
-      res
-        .status(500)
-        .json({
-          status: 500,
-          message: "Internal Server Error",
-          success: false,
-        });
+      res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+        success: false,
+      });
     }
   },
 ];
