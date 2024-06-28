@@ -297,3 +297,102 @@ export const removeFromWatched = [
     }
   },
 ];
+
+export const getWatchList = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  try {
+    const watchList = await prisma.watchlist.findMany({
+      where: { userId },
+      include: {
+        movie: {
+          select: {
+            id: true,
+            api_id: true,
+            title: true,
+            original_title: true,
+            overview: true,
+            poster_path: true,
+            backdrop_path: true,
+            genre_ids: true,
+            vote_average: true,
+            vote_count: true,
+            release_date: true,
+            popularity: true,
+            adult: true,
+            original_language: true,
+            video: true,
+          },
+        },
+      },
+    });
+    res.status(200).json(watchList);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching watchlist", error });
+  }
+};
+
+export const getWatchedList = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  try {
+    const watchedList = await prisma.watched.findMany({
+      where: { userId },
+      include: {
+        movie: {
+          select: {
+            id: true,
+            api_id: true,
+            title: true,
+            original_title: true,
+            overview: true,
+            poster_path: true,
+            backdrop_path: true,
+            genre_ids: true,
+            vote_average: true,
+            vote_count: true,
+            release_date: true,
+            popularity: true,
+            adult: true,
+            original_language: true,
+            video: true,
+          },
+        },
+      },
+    });
+    res.status(200).json(watchedList);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching watched list", error });
+  }
+};
+
+export const getFavoritesList = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  try {
+    const favoritesList = await prisma.favorite.findMany({
+      where: { userId },
+      include: {
+        movie: {
+          select: {
+            id: true,
+            api_id: true,
+            title: true,
+            original_title: true,
+            overview: true,
+            poster_path: true,
+            backdrop_path: true,
+            genre_ids: true,
+            vote_average: true,
+            vote_count: true,
+            release_date: true,
+            popularity: true,
+            adult: true,
+            original_language: true,
+            video: true,
+          },
+        },
+      },
+    });
+    res.status(200).json(favoritesList);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching favorites list", error });
+  }
+};

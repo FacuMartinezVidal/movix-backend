@@ -3,6 +3,9 @@ import {
   addToFavorites,
   addToWatched,
   addToWatchlist,
+  getFavoritesList,
+  getWatchedList,
+  getWatchList,
   removeFromFavorites,
   removeFromWatched,
   removeFromWatchlist,
@@ -27,5 +30,12 @@ listRouter.post("/watched", addToWatched);
 listRouter.delete("/watched/:userId/:api_id", removeFromWatched);
 listRouter.all("/watched", methodNotAllowed(["POST"]));
 listRouter.all("/watched/:userId/:api_id", methodNotAllowed(["DELETE"]));
+
+listRouter.route("/watchlist/:userId").get(protect, getWatchList);
+listRouter.all("/watchlist/:userId", methodNotAllowed(["GET"]));
+listRouter.route("/watched/:userId").get(protect, getWatchedList);
+listRouter.all("/watched/:userId", methodNotAllowed(["GET"]));
+listRouter.route("/favorites/:userId").get(protect, getFavoritesList);
+listRouter.all("/favorites/:userId", methodNotAllowed(["GET"]));
 
 export default listRouter;
