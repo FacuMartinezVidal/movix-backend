@@ -2,6 +2,9 @@
 
 Movix es una aplicación de gestión de listas de películas que permite a los usuarios registrar, iniciar sesión y administrar sus listas de películas favoritas, vistas y por ver.
 
+## FrontEnd
+
+
 ## Características
 
 - Registro e inicio de sesión de usuarios.
