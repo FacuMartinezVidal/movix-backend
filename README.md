@@ -4,6 +4,8 @@ Movix es una aplicación de gestión de listas de películas que permite a los u
 
 ## FrontEnd
 
+https://github.com/FacuMartinezVidal/movix
+
 
 ## Características
 
