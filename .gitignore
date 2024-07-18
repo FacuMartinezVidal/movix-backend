@@ -24,8 +24,7 @@ yarn-error.log*
 # MacOS
 .DS_Store
 
-# Environment variables
-.env
+
 
 # ESLint cache
 .eslintcache
