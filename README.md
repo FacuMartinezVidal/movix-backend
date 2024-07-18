@@ -6,7 +6,8 @@ Movix es una aplicación de gestión de listas de películas que permite a los u
 
 https://github.com/FacuMartinezVidal/movix
 
-
+## Repositorio GitHub
+https://github.com/FacuMartinezVidal/movix-backend.git
 ## Características
 
 - Registro e inicio de sesión de usuarios.
@@ -38,7 +39,7 @@ Antes de comenzar, asegúrate de tener instalado lo siguiente en tu máquina:
 1. **Clonar el repositorio:**
 
    ```sh
-   git clone https://github.com/tu-usuario/movix-backend.git
+   git clone https://github.com/FacuMartinezVidal/movix-backend.git
    cd movix-backend
    ```
 2. **Instalar Dependencias:**
@@ -200,7 +201,7 @@ Antes de comenzar, asegúrate de tener instalado lo siguiente en tu máquina:
         - 500 Internal Server Error: "Internal Server Error"
 
 #### Solicitar Token para Cambio de Contraseña
-- **POST /api/v1/user/change-password**
+- **POST /api/v1/user/send-token-password**
     - Body:
       ```json
       {
@@ -222,7 +223,7 @@ Antes de comenzar, asegúrate de tener instalado lo siguiente en tu máquina:
         - 500 Internal Server Error: "Error sending email"
 
 #### Cambiar Contraseña
-- **POST /api/v1/auth/reset-password**
+- **POST /api/v1/user/change-password**
     - Body:
       ```json
       {
@@ -455,7 +456,4 @@ Antes de comenzar, asegúrate de tener instalado lo siguiente en tu máquina:
 ## Tabla DER Base de Datos
 
 ![image](https://github.com/FacuMartinezVidal/movix-backend/assets/90455496/8925ca1f-631e-48a5-9176-6b6e9aec9ef8)
-
-## Endpoints Disponibles en Postman
-https://www.postman.com/find-your-guide/workspace/tpo-api
 
